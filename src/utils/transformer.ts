@@ -5,8 +5,8 @@ import type { ExplainNode } from '../types/explain';
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const nodeWidth = 250;
-const nodeHeight = 120;
+const nodeWidth = 220;
+const nodeHeight = 140;
 
 function parseCost(costString: string | undefined): number {
   if (!costString) return 0;
