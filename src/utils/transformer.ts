@@ -54,7 +54,7 @@ function flattenTree(node: ExplainNode, parent: string | null, nodes: ExplainNod
 }
 
 function getDagreLayout(nodes: ExplainNode[], edges: { source: string; target: string }[]): Map<string, { x: number; y: number }> {
-  dagreGraph.setGraph({ rankdir: 'TB', nodesep: 80, ranksep: 100 });
+  dagreGraph.setGraph({ rankdir: 'LR', nodesep: 80, ranksep: 120 });
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   for (const node of nodes) {
