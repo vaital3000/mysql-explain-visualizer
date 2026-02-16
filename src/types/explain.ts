@@ -80,6 +80,9 @@ export interface ExplainNode {
   isCritical: boolean;
   children: ExplainNode[];
   raw: TableInfo | OrderByOperation | GroupByOperation;
+  // Cost percentages for MySQL Workbench style
+  costPercent?: number;
+  relativeCostPercent?: number;
   // Index signature for React Flow compatibility
   [key: string]: unknown;
 }
