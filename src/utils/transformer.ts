@@ -8,6 +8,34 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 250;
 const nodeHeight = 120;
 
+function parseCost(costString: string | undefined): number {
+  if (!costString) return 0;
+  const match = costString.match(/[\d.]+/);
+  return match ? parseFloat(match[0]) : 0;
+}
+
+function calculateCostPercentages(
+  rootNode: ExplainNode,
+  totalCost: number,
+  parentCost: number = totalCost
+): void {
+  // Calculate this node's cost
+  const nodeCost = parseCost(rootNode.costInfo?.query_cost as string | undefined);
+
+  if (totalCost > 0) {
+    rootNode.costPercent = (nodeCost / totalCost) * 100;
+  }
+
+  if (parentCost > 0) {
+    rootNode.relativeCostPercent = (nodeCost / parentCost) * 100;
+  }
+
+  // Recursively calculate for children
+  for (const child of rootNode.children) {
+    calculateCostPercentages(child, totalCost, nodeCost || parentCost);
+  }
+}
+
 export interface TransformedData {
   nodes: Node<ExplainNode>[];
   edges: Edge[];
@@ -52,6 +80,12 @@ function getDagreLayout(nodes: ExplainNode[], edges: { source: string; target: s
 }
 
 export function transformToFlow(rootNode: ExplainNode): TransformedData {
+  // Calculate total cost from root
+  const totalCost = parseCost(rootNode.costInfo?.query_cost as string | undefined);
+
+  // Apply cost percentages to all nodes
+  calculateCostPercentages(rootNode, totalCost);
+
   const flatNodes: ExplainNode[] = [];
   const flatEdges: { source: string; target: string }[] = [];
 
