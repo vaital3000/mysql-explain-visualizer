@@ -80,4 +80,6 @@ export interface ExplainNode {
   isCritical: boolean;
   children: ExplainNode[];
   raw: TableInfo | OrderByOperation | GroupByOperation;
+  // Index signature for React Flow compatibility
+  [key: string]: unknown;
 }
