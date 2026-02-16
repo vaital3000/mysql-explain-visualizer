@@ -1,34 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useExplainParser } from './hooks/useExplainParser';
+import { FlowChart } from './components/FlowChart';
+import { InputPanel } from './components/InputPanel';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { nodes, edges, error, parse } = useExplainParser(500);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="h-24 p-6" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="h-24 p-6 animate-spin" alt="React logo" />
-        </a>
+    <div className="flex h-screen w-screen overflow-hidden">
+      {/* Main visualization area */}
+      <div className="flex-1 bg-gray-100">
+        {nodes.length > 0 ? (
+          <FlowChart nodes={nodes} edges={edges} />
+        ) : (
+          <div className="h-full flex items-center justify-center text-gray-400">
+            <div className="text-center">
+              <div className="text-6xl mb-4">📊</div>
+              <p className="text-lg">Paste EXPLAIN JSON to visualize</p>
+            </div>
+          </div>
+        )}
       </div>
-      <h1 className="text-5xl font-bold">Vite + React</h1>
-      <div className="p-8">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p className="p-2">
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="text-gray-500">
-        Click on the Vite and React logos to learn more
-      </p>
+
+      {/* Input panel */}
+      <InputPanel onParse={parse} error={error} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
