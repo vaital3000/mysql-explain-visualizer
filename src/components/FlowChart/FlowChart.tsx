@@ -24,6 +24,7 @@ export function FlowChart({ nodes, edges }: FlowChartProps) {
         maxZoom={2}
         defaultEdgeOptions={{
           type: 'smoothstep',
+          style: { strokeWidth: 2 },
         }}
       >
         <Background color="#aaa" gap={16} />
