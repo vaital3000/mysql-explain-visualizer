@@ -25,7 +25,7 @@ function getAccessColor(accessType: AccessType | undefined): { bg: string; borde
 
 function getIntensityClass(costPercent: number | undefined): string {
   if (costPercent === undefined) return '';
-  if (costPercent > 50) return 'ring-2 ring-offset-1 ring-opacity-50';
+  if (costPercent > 50) return 'ring-2 ring-offset-1 ring-red-400 ring-opacity-50';
   if (costPercent > 10) return '';
   return 'opacity-80';
 }
@@ -40,23 +40,20 @@ function formatNumber(num: number | undefined): string {
   return num.toLocaleString();
 }
 
-interface ExplainNodeDataExtended extends ExplainNodeData {
-  costPercent?: number;
-  relativeCostPercent?: number;
-}
-
 function ExplainNodeInner({ data }: NodeProps) {
-  const nodeData = data as ExplainNodeDataExtended;
+  const nodeData = data as ExplainNodeData;
   const colors = getAccessColor(nodeData.accessType);
   const intensityClass = getIntensityClass(nodeData.costPercent);
-  const table = nodeData.raw as TableInfo;
+  const table = 'table_name' in nodeData.raw ? nodeData.raw as TableInfo : null;
 
-  const hasDetails = table.possible_keys?.length ||
+  const hasDetails = table && (
+    table.possible_keys?.length ||
     table.key_length ||
     table.ref?.length ||
     table.filtered ||
     nodeData.attachedCondition ||
-    nodeData.usedColumns?.length;
+    nodeData.usedColumns?.length
+  );
 
   return (
     <div className={`group relative ${intensityClass}`}>
@@ -112,7 +109,7 @@ function ExplainNodeInner({ data }: NodeProps) {
       </div>
 
       {/* Hover tooltip with details */}
-      {hasDetails && (
+      {hasDetails && table && (
         <div className="absolute left-full ml-3 top-0 z-50 hidden group-hover:block">
           <div className="bg-gray-800 text-white text-xs rounded-lg p-3 min-w-[250px] shadow-xl">
             {table.possible_keys && table.possible_keys.length > 0 && (
