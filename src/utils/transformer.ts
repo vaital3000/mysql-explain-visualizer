@@ -1,6 +1,8 @@
 import type { Node, Edge } from '@xyflow/react';
 import dagre from 'dagre';
 import type { ExplainNode } from '../types/explain';
+import type { ParsedExplain } from './parser';
+export { ParseError } from './parser';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -79,7 +81,10 @@ function getDagreLayout(nodes: ExplainNode[], edges: { source: string; target: s
   return positions;
 }
 
-export function transformToFlow(rootNode: ExplainNode): TransformedData {
+export function transformToFlow(parsed: ParsedExplain): TransformedData {
+  const rootNode = parsed.root;
+  const chainEdges = parsed.chainEdges;
+
   // Calculate total cost from root
   const totalCost = parseCost(rootNode.costInfo?.query_cost as string | undefined);
 
@@ -89,9 +94,14 @@ export function transformToFlow(rootNode: ExplainNode): TransformedData {
   const flatNodes: ExplainNode[] = [];
   const flatEdges: { source: string; target: string }[] = [];
 
+  // Flatten tree to get parent-child edges
   flattenTree(rootNode, null, flatNodes, flatEdges);
 
-  const positions = getDagreLayout(flatNodes, flatEdges);
+  // Combine tree edges with chain edges
+  // Chain edges connect tables in nested_loop sequentially
+  const allEdges = [...flatEdges, ...chainEdges];
+
+  const positions = getDagreLayout(flatNodes, allEdges);
 
   const nodes: Node<ExplainNode>[] = flatNodes.map(node => ({
     id: node.id,
@@ -100,7 +110,7 @@ export function transformToFlow(rootNode: ExplainNode): TransformedData {
     data: node,
   }));
 
-  const edges: Edge[] = flatEdges.map((edge, index) => ({
+  const edges: Edge[] = allEdges.map((edge, index) => ({
     id: `edge-${index}`,
     source: edge.source,
     target: edge.target,
@@ -110,3 +120,7 @@ export function transformToFlow(rootNode: ExplainNode): TransformedData {
 
   return { nodes, edges };
 }
+
+// Re-export for convenience
+export { parseExplainJson } from './parser';
+export type { ParsedExplain } from './parser';

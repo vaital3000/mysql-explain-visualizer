@@ -1,8 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Node, Edge } from '@xyflow/react';
-import { parseExplainJson, ParseError } from '../utils/parser';
-import { transformToFlow } from '../utils/transformer';
-import type { ExplainNode } from '../types/explain';
+import { parseExplainJson, transformToFlow, ParseError } from '../utils/transformer';
 
 export type ErrorCode = 'PARSE_ERROR' | 'INVALID_FORMAT' | 'EMPTY_INPUT';
 
@@ -16,14 +14,12 @@ export interface UseExplainParserResult {
   edges: Edge[];
   error: ParserError | null;
   parse: (input: string) => void;
-  rawTree: ExplainNode | null;
 }
 
 export function useExplainParser(debounceMs: number = 500): UseExplainParserResult {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [error, setError] = useState<ParserError | null>(null);
-  const [rawTree, setRawTree] = useState<ExplainNode | null>(null);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -34,10 +30,9 @@ export function useExplainParser(debounceMs: number = 500): UseExplainParserResu
 
     timeoutRef.current = setTimeout(() => {
       try {
-        const tree = parseExplainJson(input);
-        const { nodes: flowNodes, edges: flowEdges } = transformToFlow(tree);
+        const parsed = parseExplainJson(input);
+        const { nodes: flowNodes, edges: flowEdges } = transformToFlow(parsed);
 
-        setRawTree(tree);
         setNodes(flowNodes);
         setEdges(flowEdges);
         setError(null);
@@ -50,12 +45,11 @@ export function useExplainParser(debounceMs: number = 500): UseExplainParserResu
         } else {
           setError({
             code: 'PARSE_ERROR',
-            message: (e as Error).message,
+            message: e instanceof Error ? e.message : String(e),
           });
         }
         setNodes([]);
         setEdges([]);
-        setRawTree(null);
       }
     }, debounceMs);
   }, [debounceMs]);
@@ -68,5 +62,5 @@ export function useExplainParser(debounceMs: number = 500): UseExplainParserResu
     };
   }, []);
 
-  return { nodes, edges, error, parse, rawTree };
+  return { nodes, edges, error, parse };
 }

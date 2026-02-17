@@ -50,6 +50,7 @@ function parseOrderBy(op: OrderByOperation): ExplainNode {
   }
 
   if (op.nested_loop) {
+    // nested_loop inside ORDER BY becomes children (sub-plan)
     children.push(...op.nested_loop.map(nl => parseNestedLoop(nl)));
   }
 
@@ -73,6 +74,7 @@ function parseGroupBy(op: GroupByOperation): ExplainNode {
   }
 
   if (op.nested_loop) {
+    // nested_loop inside GROUP BY becomes children (sub-plan)
     children.push(...op.nested_loop.map(nl => parseNestedLoop(nl)));
   }
 
@@ -117,10 +119,62 @@ function parseNestedLoop(nl: NestedLoop): ExplainNode {
   };
 }
 
-function parseQueryBlock(qb: QueryBlock): ExplainNode {
+/**
+ * Parse nested_loop array as a sequential chain.
+ * Returns nodes (first table as root of chain, others nested) and chain edges.
+ *
+ * In MySQL EXPLAIN, nested_loop represents sequential joins:
+ * table1 → table2 → table3 (not parallel)
+ *
+ * We create a nested structure: table1.children = [table2], table2.children = [table3]
+ * This way flattenTree creates sequential edges.
+ */
+export interface ParsedChain {
+  firstNode: ExplainNode | null;
+  allNodes: ExplainNode[];
+  chainEdges: { source: string; target: string }[];
+}
+
+function parseNestedLoopChain(nlArray: NestedLoop[]): ParsedChain {
+  if (nlArray.length === 0) return { firstNode: null, allNodes: [], chainEdges: [] };
+
+  const allNodes: ExplainNode[] = [];
+  let firstNode: ExplainNode | null = null;
+  let previousNode: ExplainNode | null = null;
+
+  for (const nl of nlArray) {
+    let currentNode: ExplainNode;
+
+    // For simple nested_loop with just a table, extract the table directly
+    if (nl.table && !nl.ordering_operation && !nl.grouping_operation && !nl.nested_loop) {
+      currentNode = parseTableInfo(nl.table);
+    } else {
+      // For complex nested_loop (with operations), create the wrapper node
+      currentNode = parseNestedLoop(nl);
+    }
+
+    allNodes.push(currentNode);
+
+    if (firstNode === null) {
+      firstNode = currentNode;
+    }
+
+    // Chain: add current node as child of previous node
+    if (previousNode !== null) {
+      previousNode.children.push(currentNode);
+    }
+
+    previousNode = currentNode;
+  }
+
+  return { firstNode, allNodes, chainEdges: [] };
+}
+
+function parseQueryBlock(qb: QueryBlock): { root: ExplainNode; chainEdges: { source: string; target: string }[] } {
   nodeIdCounter = 0;
   const id = generateNodeId();
   const children: ExplainNode[] = [];
+  let chainEdges: { source: string; target: string }[] = [];
 
   if (qb.table) {
     children.push(parseTableInfo(qb.table));
@@ -134,11 +188,17 @@ function parseQueryBlock(qb: QueryBlock): ExplainNode {
     children.push(parseGroupBy(qb.grouping_operation));
   }
 
+  // Parse nested_loop as a sequential chain
+  // Only add the first node to children; the rest are chained via children array
   if (qb.nested_loop) {
-    children.push(...qb.nested_loop.map(nl => parseNestedLoop(nl)));
+    const { firstNode, chainEdges: edges } = parseNestedLoopChain(qb.nested_loop);
+    if (firstNode) {
+      children.push(firstNode);
+    }
+    chainEdges = edges;
   }
 
-  return {
+  const root: ExplainNode = {
     id,
     type: 'operation',
     operationType: 'query_block',
@@ -147,9 +207,16 @@ function parseQueryBlock(qb: QueryBlock): ExplainNode {
     children,
     raw: {} as TableInfo,
   };
+
+  return { root, chainEdges };
 }
 
-export function parseExplainJson(input: string): ExplainNode {
+export interface ParsedExplain {
+  root: ExplainNode;
+  chainEdges: { source: string; target: string }[];
+}
+
+export function parseExplainJson(input: string): ParsedExplain {
   const trimmed = input.trim();
 
   if (!trimmed) {

@@ -16,12 +16,12 @@ describe('parseExplainJson', () => {
 
     const result = parseExplainJson(input);
 
-    expect(result.type).toBe('operation');
-    expect(result.operationType).toBe('query_block');
-    expect(result.children).toHaveLength(1);
-    expect(result.children[0].type).toBe('table');
-    expect(result.children[0].tableName).toBe('users');
-    expect(result.children[0].accessType).toBe('ALL');
+    expect(result.root.type).toBe('operation');
+    expect(result.root.operationType).toBe('query_block');
+    expect(result.root.children).toHaveLength(1);
+    expect(result.root.children[0].type).toBe('table');
+    expect(result.root.children[0].tableName).toBe('users');
+    expect(result.root.children[0].accessType).toBe('ALL');
   });
 
   it('should reject invalid JSON', () => {
@@ -47,7 +47,7 @@ describe('parseExplainJson', () => {
     });
 
     const result = parseExplainJson(input);
-    expect(result.isCritical).toBe(true);
+    expect(result.root.isCritical).toBe(true);
   });
 
   it('should detect filesort as critical', () => {
@@ -61,7 +61,7 @@ describe('parseExplainJson', () => {
     });
 
     const result = parseExplainJson(input);
-    expect(result.isCritical).toBe(true);
+    expect(result.root.isCritical).toBe(true);
   });
 
   it('should not mark index scan as critical', () => {
@@ -76,6 +76,6 @@ describe('parseExplainJson', () => {
     });
 
     const result = parseExplainJson(input);
-    expect(result.isCritical).toBe(false);
+    expect(result.root.isCritical).toBe(false);
   });
 });
