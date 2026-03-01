@@ -1,6 +1,7 @@
 import { useExplainParser } from './hooks/useExplainParser';
 import { FlowChart } from './components/FlowChart';
 import { InputPanel } from './components/InputPanel';
+import { ThemeToggle } from './components/ThemeToggle';
 
 function App() {
   const { nodes, edges, error, parse } = useExplainParser(500);
@@ -12,6 +13,11 @@ function App() {
       <div className="orb orb-1" />
       <div className="orb orb-2" />
       <div className="orb orb-3" />
+
+      {/* Theme Toggle Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
 
       {/* Main visualization area */}
       <div className="flex-1 relative">
@@ -49,10 +55,10 @@ function App() {
               </h1>
 
               {/* Subtitle */}
-              <p className="text-slate-400 text-lg mb-2">
+              <p className="text-theme-text-secondary text-lg mb-2">
                 Paste your EXPLAIN JSON to visualize query execution plans
               </p>
-              <p className="text-slate-500 text-sm">
+              <p className="text-theme-text-muted text-sm">
                 Understand how MySQL executes your queries
               </p>
 

@@ -2,19 +2,34 @@
 
 /* Custom CSS Variables */
 :root {
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #111827;
-  --glass-bg: rgba(17, 24, 39, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.08);
   --accent-cyan: #06b6d4;
   --accent-purple: #a855f7;
   --accent-pink: #ec4899;
   --accent-emerald: #10b981;
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
+}
+
+/* Dark Theme (default) */
+[data-theme='dark'] {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --glass-bg: rgba(17, 24, 39, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
+}
+
+/* Light Theme */
+[data-theme='light'] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 }
 
 * {
@@ -34,12 +49,23 @@ body {
   position: fixed;
   inset: 0;
   z-index: -1;
+  animation: gradientShift 20s ease-in-out infinite;
+}
+
+[data-theme='dark'] .animated-bg {
   background:
     radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.08) 0%, transparent 60%),
     linear-gradient(180deg, #0a0e1a 0%, #111827 50%, #0a0e1a 100%);
-  animation: gradientShift 20s ease-in-out infinite;
+}
+
+[data-theme='light'] .animated-bg {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 60%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
 }
 
 @keyframes gradientShift {
@@ -68,7 +94,7 @@ body {
   z-index: -1;
 }
 
-.orb-1 {
+[data-theme='dark'] .orb-1 {
   width: 400px;
   height: 400px;
   background: linear-gradient(135deg, #06b6d4, #3b82f6);
@@ -77,7 +103,16 @@ body {
   animation: float1 25s ease-in-out infinite;
 }
 
-.orb-2 {
+[data-theme='light'] .orb-1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(59, 130, 246, 0.5));
+  top: -100px;
+  left: -100px;
+  animation: float1 25s ease-in-out infinite;
+}
+
+[data-theme='dark'] .orb-2 {
   width: 300px;
   height: 300px;
   background: linear-gradient(135deg, #a855f7, #ec4899);
@@ -86,10 +121,28 @@ body {
   animation: float2 30s ease-in-out infinite;
 }
 
-.orb-3 {
+[data-theme='light'] .orb-2 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(236, 72, 153, 0.5));
+  bottom: -50px;
+  right: -50px;
+  animation: float2 30s ease-in-out infinite;
+}
+
+[data-theme='dark'] .orb-3 {
   width: 250px;
   height: 250px;
   background: linear-gradient(135deg, #10b981, #06b6d4);
+  top: 50%;
+  left: 30%;
+  animation: float3 22s ease-in-out infinite;
+}
+
+[data-theme='light'] .orb-3 {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(6, 182, 212, 0.5));
   top: 50%;
   left: 30%;
   animation: float3 22s ease-in-out infinite;
@@ -123,14 +176,30 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+[data-theme='light'] .glass {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
 .glass-strong {
-  background: rgba(17, 24, 39, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .glass-strong {
+  background: rgba(17, 24, 39, 0.85);
+}
+
+[data-theme='light'] .glass-strong {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 /* Glowing Effects */
@@ -181,14 +250,22 @@ body {
 
 /* Button Styles */
 .btn-glass {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--text-primary);
   font-family: 'Outfit', sans-serif;
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+}
+
+[data-theme='dark'] .btn-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+[data-theme='light'] .btn-glass {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.02));
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .btn-glass::before {
@@ -218,8 +295,13 @@ body {
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
+[data-theme='dark'] ::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+[data-theme='light'] ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 4px;
 }
 
@@ -246,6 +328,10 @@ body {
   overflow: hidden;
 }
 
+[data-theme='light'] .react-flow__controls {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
 .react-flow__controls-button {
   background: transparent !important;
   border: none !important;
@@ -268,6 +354,10 @@ body {
   border: 1px solid var(--glass-border) !important;
   border-radius: 12px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme='light'] .react-flow__minimap {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Edge Animations */
