@@ -92,7 +92,7 @@ export function InputPanel({ onParse, error }: InputPanelProps) {
       </div>
 
       {/* Header */}
-      <div className="px-5 py-4 border-b border-white/10">
+      <div className="px-5 py-4 border-b border-theme-text-secondary/10">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="absolute inset-0 blur-md bg-purple-500/50" />
@@ -103,8 +103,8 @@ export function InputPanel({ onParse, error }: InputPanelProps) {
             </div>
           </div>
           <div>
-            <h2 className="font-semibold text-white text-sm">EXPLAIN JSON</h2>
-            <p className="text-xs text-slate-400">Paste query output</p>
+            <h2 className="font-semibold text-theme-text text-sm">EXPLAIN JSON</h2>
+            <p className="text-xs text-theme-text-secondary">Paste query output</p>
           </div>
         </div>
       </div>
@@ -116,11 +116,11 @@ export function InputPanel({ onParse, error }: InputPanelProps) {
           <textarea
             className="
               w-full h-full p-4 rounded-xl
-              bg-black/30 border border-white/10
-              font-mono text-sm text-slate-200
+              bg-black/30 border border-theme-text-secondary/10
+              font-mono text-sm text-theme-text-secondary
               resize-none
               focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50
-              placeholder-slate-500
+              placeholder-theme-text-muted
               transition-all duration-300
             "
             placeholder="Paste EXPLAIN FORMAT=JSON output here..."
@@ -145,7 +145,7 @@ export function InputPanel({ onParse, error }: InputPanelProps) {
       )}
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-theme-text-secondary/10">
         <button
           onClick={handleLoadExample}
           className="
@@ -162,7 +162,7 @@ export function InputPanel({ onParse, error }: InputPanelProps) {
         </button>
 
         {/* Info text */}
-        <p className="text-center text-xs text-slate-500 mt-3">
+        <p className="text-center text-xs text-theme-text-muted mt-3">
           Use <code className="text-cyan-400/70 bg-cyan-400/10 px-1.5 py-0.5 rounded">EXPLAIN FORMAT=JSON</code> in MySQL
         </p>
       </div>

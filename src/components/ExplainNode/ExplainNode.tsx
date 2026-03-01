@@ -160,13 +160,13 @@ function ExplainNodeInner({ data }: NodeProps) {
           {/* Cost */}
           {nodeData.costPercent !== undefined && (
             <div className="flex justify-between items-center">
-              <span className="text-slate-400 text-xs uppercase tracking-wider">Cost</span>
+              <span className="text-theme-text-secondary text-xs uppercase tracking-wider">Cost</span>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm font-medium text-white">
+                <span className="font-mono text-sm font-medium text-theme-text">
                   {formatPercent(nodeData.costPercent)}
                 </span>
                 {nodeData.relativeCostPercent !== undefined && nodeData.relativeCostPercent !== nodeData.costPercent && (
-                  <span className="text-slate-500 text-xs">
+                  <span className="text-theme-text-muted text-xs">
                     ({formatPercent(nodeData.relativeCostPercent)})
                   </span>
                 )}
@@ -218,49 +218,49 @@ function ExplainNodeInner({ data }: NodeProps) {
         <div className="absolute left-full ml-4 top-0 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-x-1">
           <div className="glass-strong rounded-2xl p-4 min-w-[280px]">
             {/* Tooltip header */}
-            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-white/10">
+            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-theme-text-secondary/10">
               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-sm font-medium text-white">Details</span>
+              <span className="text-sm font-medium text-theme-text">Details</span>
             </div>
 
             <div className="space-y-2 text-sm">
               {table.possible_keys && table.possible_keys.length > 0 && (
                 <div>
-                  <span className="text-slate-400">Possible keys:</span>{' '}
+                  <span className="text-theme-text-secondary">Possible keys:</span>{' '}
                   <span className="text-cyan-300 font-mono text-xs">{table.possible_keys.join(', ')}</span>
                 </div>
               )}
 
               {table.key_length && (
                 <div>
-                  <span className="text-slate-400">Key length:</span>{' '}
-                  <span className="text-white font-mono">{table.key_length}</span>
+                  <span className="text-theme-text-secondary">Key length:</span>{' '}
+                  <span className="text-theme-text font-mono">{table.key_length}</span>
                 </div>
               )}
 
               {table.ref && table.ref.length > 0 && (
                 <div>
-                  <span className="text-slate-400">Ref:</span>{' '}
+                  <span className="text-theme-text-secondary">Ref:</span>{' '}
                   <span className="text-purple-300 font-mono text-xs">{table.ref.join(', ')}</span>
                 </div>
               )}
 
               {table.filtered && (
                 <div>
-                  <span className="text-slate-400">Filtered:</span>{' '}
+                  <span className="text-theme-text-secondary">Filtered:</span>{' '}
                   <span className="text-emerald-300 font-mono">{table.filtered}%</span>
                 </div>
               )}
 
               {nodeData.attachedCondition && (
                 <>
-                  <div className="border-t border-white/10 my-2" />
+                  <div className="border-t border-theme-text-secondary/10 my-2" />
                   <div>
-                    <span className="text-slate-400 block mb-1">Condition:</span>
+                    <span className="text-theme-text-secondary block mb-1">Condition:</span>
                     <div className="text-amber-300 font-mono text-xs break-all bg-amber-500/10 p-2 rounded-lg">
                       {nodeData.attachedCondition}
                     </div>
@@ -270,9 +270,9 @@ function ExplainNodeInner({ data }: NodeProps) {
 
               {nodeData.usedColumns && nodeData.usedColumns.length > 0 && (
                 <>
-                  <div className="border-t border-white/10 my-2" />
+                  <div className="border-t border-theme-text-secondary/10 my-2" />
                   <div>
-                    <span className="text-slate-400 block mb-1">Used columns:</span>
+                    <span className="text-theme-text-secondary block mb-1">Used columns:</span>
                     <div className="text-emerald-300 font-mono text-xs break-all bg-emerald-500/10 p-2 rounded-lg">
                       {nodeData.usedColumns.join(', ')}
                     </div>
